@@ -1,5 +1,5 @@
 10 rem advent of code 2023, day 01, part 2 - trebuchet?!
-20 rem commodore 64 basic
+20 rem commodore 64 basic, takes about 30 mins
 30 rem
 40 rem main loop, read all data lines in turn
 50 dim v1$(1000)

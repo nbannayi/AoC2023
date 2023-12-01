@@ -4,6 +4,6 @@ This year I am hoping to use a different language every day in an attenpt to lea
 Please note many of the solutions are unlikely to be particularly good as I'll be attempting to pick up most of the languages from scratch.
 
 Current schedule:
-* Day 01: Commodore 64 BASIC
+* Day 01: Commodore 64 BASIC (/)
 * Day 02: COBOL or Rust
 * Day 03 onwards: TBC...

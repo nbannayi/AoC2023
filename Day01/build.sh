@@ -4,5 +4,5 @@
 # (Download and install VICE to use these, then run the d64 disk image on your C64 emulator of choice.)
 /Users/Nick/development/c64/Vice/bin/petcat -w2 -o day01_1_trebuchet.bas -- day01_1_trebuchet_txt.bas
 /Users/Nick/development/c64/Vice/bin/petcat -w2 -o day01_2_trebuchet.bas -- day01_2_trebuchet_txt.bas
-/Users/Nick/development/c64/Vice/bin/c1541 -format diskname,id d64 day01.d64 -attach day01.d64 -write day01_1_trebuchet.bas day01pt1.prg
+/Users/Nick/development/c64/Vice/bin/c1541 -format adventofcode,id d64 day01.d64 -attach day01.d64 -write day01_1_trebuchet.bas day01pt1.prg
 /Users/Nick/development/c64/Vice/bin/c1541 -attach day01.d64 -write day01_2_trebuchet.bas day01pt2.prg

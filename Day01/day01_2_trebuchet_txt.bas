@@ -11,7 +11,6 @@
 78    print i+1;v1$(i);v2%(i);t
 80 next i
 85 print "part 2 answer:";t
-90 rem
 95 end
 100 rem extract digits from line and concatenate (ascii 48-57), also parse words
 110 l = -1 : r = -1

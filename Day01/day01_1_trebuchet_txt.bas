@@ -12,7 +12,6 @@
 80 next i
 85 print "part 1 answer:";t
 90 end
-95 rem
 100 rem extract digits from line and concatenate (ascii 48-57)
 116 l = -1 : r = -1
 120 for j = 1 to len(v1$(i))

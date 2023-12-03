@@ -5,5 +5,6 @@ Please note many of the solutions are unlikely to be particularly good as I'll b
 
 Current schedule:
 * Day 01: Commodore 64 BASIC (Done)
-* Day 02: COBOL or Rust
-* Day 03 onwards: TBC...
+* Day 02: COBOL (Done)
+* Day 03: Lua
+* Day 04: TBC...

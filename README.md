@@ -6,5 +6,6 @@ Please note many of the solutions are unlikely to be particularly good as I'll b
 Current schedule (with current stars completed):
 * Day 01: Commodore 64 BASIC (**)
 * Day 02: COBOL (**)
-* Day 03: Erlang (*)
-* Day 04: TBC...
+* Day 03: Erlang (**)
+* Day 04: Lua
+* Day 05: TBC...

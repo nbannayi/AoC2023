@@ -15,8 +15,15 @@ start() ->
 
 % Get the Schematic character at 1-indexed position (Row,Col)
 get_schematic_item(Schematic, Row, Col) ->
-    RowLine = lists:nth(Row, Schematic),
-    string:slice(RowLine, Col-1, 1).
+    NoRows = length(Schematic),
+    RowLength = get_row_Length(Schematic),
+    if 
+        (Row < 1) or (Row > NoRows) or (Col < 1) or (Col > RowLength) ->
+            '.';
+        true ->
+            RowLine = lists:nth(Row, Schematic),
+            string:slice(RowLine, Col-1, 1)
+    end.
 
 % Gets the length of each line in schematic.
 get_row_Length(Schematic) ->
@@ -24,7 +31,6 @@ get_row_Length(Schematic) ->
     string:length(RowLine).
 
 % Determine if a schematic item is a special character.
-
 %is_special_character(item) ->
 %    ItemPos = string:str("0123456789.", item),
 %    if
@@ -95,3 +101,10 @@ get_item_by_coords(Output, Schematic, Row, CurrentIndex, StopIndex) ->
     Item = get_schematic_item(Schematic, Row, CurrentIndex),
     NewOutput = string:concat(Output, Item),
     get_item_by_coords(NewOutput, Schematic, Row, CurrentIndex+1, StopIndex).
+
+% Determine if a number associated with a row and left and right coordimates is valid.
+%is_item_Valid_by_coords(_, _, _, StopIndex, StopIndex) ->
+%    true;
+%is_item_Valid_by_coords(Output,Schematic, Row, CurrentIndex, StopIndex) ->
+%    % Do stuff here.
+%    is_item_Valid_by_coords(Output,Schematic, Row, CurrentIndex+1, StopIndex).

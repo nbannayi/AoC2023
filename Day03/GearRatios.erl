@@ -9,6 +9,8 @@ start() ->
     io:fwrite("~p~n", [Schematic]),
     ItemLocations = get_item_locations([],Schematic,42,1,get_row_Length(Schematic)+1),
     io:fwrite("~p~n", [ItemLocations]),
+    Item = get_item_by_coords("",Schematic,42,138,140),
+    io:fwrite("~p~n", [Item]),
     ok.
 
 % Get the Schematic character at 1-indexed position (Row,Col)
@@ -84,3 +86,12 @@ get_item_locations(Output, Schematic, Row, CurrentIndex, StopIndex) ->
                 Output
         end,    
     get_item_locations(NewOutput, Schematic, Row, CurrentIndex+1, StopIndex).
+
+% Gets the number associated with a row and left and right coordinates.
+get_item_by_coords(Output, Schematic, Row, StopIndex, StopIndex) ->
+    Item = get_schematic_item(Schematic, Row, StopIndex),
+    list_to_integer(string:concat(Output, Item));
+get_item_by_coords(Output, Schematic, Row, CurrentIndex, StopIndex) ->
+    Item = get_schematic_item(Schematic, Row, CurrentIndex),
+    NewOutput = string:concat(Output, Item),
+    get_item_by_coords(NewOutput, Schematic, Row, CurrentIndex+1, StopIndex).

@@ -7,5 +7,5 @@ Current schedule (with current stars completed):
 * Day 01: Commodore 64 BASIC (**)
 * Day 02: COBOL (**)
 * Day 03: Erlang (**)
-* Day 04: Lua
+* Day 04: Lua (*)
 * Day 05: TBC...

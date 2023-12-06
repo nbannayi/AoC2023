@@ -8,4 +8,5 @@ Current schedule (with current stars completed):
 * Day 02: COBOL (**)
 * Day 03: Erlang (**)
 * Day 04: Lua (**)
-* Day 05: TBC...
+* Day 05: Perl
+* Day 06: TBC...

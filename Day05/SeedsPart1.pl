@@ -4,6 +4,8 @@ use warnings;
 use List::Util qw(min);
 
 # Adent of Code 2023 Day 05, Part 1 - If You Give A Seed A Fertilizer.
+# Probably the worst solution going - lwft it running overnight and had finished by the morning.
+# Honestly not sure how long it took or how to optimise this, but a star is a star I giess!
 # Perl.
 
 # Load raw input data into arrays of lines.
@@ -142,5 +144,5 @@ my @locations =
         \@temperatureToHumidityMap,
         \@humidityToLocationMap);
 
-# Finally return minimum locations.
+# Finally return lowest locations.
 print("Part 1 answer: ", min(@locations),"\n");

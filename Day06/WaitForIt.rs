@@ -4,14 +4,14 @@
 // Race type for storing puzzle input.
 #[derive(Debug)]
 struct Race {
-    time: u32,
-    distance: u32
+    time: u64,
+    distance: u64
 }
 
 // Given a time and distance return the number of ways to win.
-fn get_no_ways_to_win(time: u32, distance: u32) -> u32 {
-    let mut count = 0u32;
-    for t in 1u32..(time-1) {
+fn get_no_ways_to_win(time: u64, distance: u64) -> u64 {
+    let mut count = 0u64;
+    for t in 1u64..(time-1) {
         let run_distance = t*(time-t);
         if run_distance > distance {
             count += 1;
@@ -21,8 +21,8 @@ fn get_no_ways_to_win(time: u32, distance: u32) -> u32 {
 }
 
 // Get margin of error for all races.
-fn get_margin_of_error(races: &[Race]) -> u32 {
-    let mut margin_of_error = 1u32;
+fn get_margin_of_error(races: &[Race]) -> u64 {
+    let mut margin_of_error = 1u64;
     for race in races {
         margin_of_error *= get_no_ways_to_win(race.time, race.distance);        
     }
@@ -37,21 +37,13 @@ fn correct_kerning (races: &[Race]) -> Race {
         time_str.push_str(&race.time.to_string());        
         distance_str.push_str(&race.distance.to_string());        
     }
-    let time_value: u32 = time_str.parse().unwrap();
-    let distance_value: u32 = distance_str.parse().unwrap();
-    let corrected_race = Race {time: time_value, distance: distance_value};
+    let time_value: u64 = time_str.parse().unwrap();
+    let distance_value: u64 = distance_str.parse().unwrap();
     return Race {time: time_value, distance: distance_value};
 }
 
 fn main () {
-    // Input data - so small will create it manully for now.    
-    let example_races = 
-        [
-            Race {time: 7,  distance: 9}, 
-            Race {time: 15, distance: 40}, 
-            Race {time: 30, distance: 200}
-        ];
-    /*
+    // Input data - so small created it manually.    
     let races =
         [
             Race {time: 46, distance: 358}, 
@@ -59,14 +51,13 @@ fn main () {
             Race {time: 98, distance: 1807},
             Race {time: 66, distance: 1080}
         ];
-    */
 
     // Part 1.
-    let margin_of_error = get_margin_of_error(&example_races);
+    let margin_of_error = get_margin_of_error(&races);
     println!("Part 1 answer: {}", margin_of_error);
 
-    // Part 2 (naive, unlikely to work for full input...)
-    let corrected_race = correct_kerning(&example_races);
+    // Part 2.
+    let corrected_race = correct_kerning(&races);
     let no_ways_to_win = get_no_ways_to_win(corrected_race.time, corrected_race.distance);
     println!("Part 2 answer: {}", no_ways_to_win);
 }

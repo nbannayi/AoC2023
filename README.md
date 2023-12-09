@@ -10,5 +10,4 @@ Current schedule (with stars completed):
 * Day 04: Lua (**)
 * Day 05: Perl (**)
 * Day 06: Rust (**)
-* Day 07: Elixir
-* Day 08: TBC...
+* Day 07: TBC...

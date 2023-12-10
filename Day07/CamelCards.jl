@@ -20,36 +20,52 @@ function get_card_strength_1(card)
     return findfirst(isequal(card), "23456789TJQKA")
 end
 
-# classify a hand returning the corresponding rank (no Jokers.)
-function classify_hand_1(hand)
-    # First get card groups.
+# Return strength of a card for comparison (with Jokers.)
+function get_card_strength_2(card)
+    return findfirst(isequal(card), "J23456789TQKA")
+end
+
+# Get card groups from a hand.
+function get_card_groups(hand)
     cards = collect(hand)
     card_groups = Dict()
     for card in cards
-        if !haskey(card_groups, card)
-            card_groups[card] = 1
-        else
-            card_groups[card] += 1
-        end
+        if !haskey(card_groups, card) card_groups[card] = 1 else card_groups[card] += 1 end
     end
-    # Now classify rank based on card groupings.
+    return card_groups
+end
+
+# classify a hand returning the corresponding rank (no Jokers.)
+function classify_hand_1(hand)
+    card_groups = get_card_groups(hand)
     no_groups = length(card_groups)    
     rank = @match no_groups begin
         1 => five_of_a_kind
-        2 => 
-            if in(3, values(card_groups))
-                full_house
-            else
-                four_of_a_kind
-            end
-        3 => 
-            if in(3, values(card_groups))
-                three_of_a_kind
-            else
-                two_pair        
-            end
+        2 => if in(3, values(card_groups)) full_house else four_of_a_kind end
+        3 => if in(3, values(card_groups)) three_of_a_kind else two_pair end
         4 => one_pair
         5 => high_card
+    end    
+    return rank
+end
+
+# classify a hand returning the corresponding rank (with Jokers.)
+function classify_hand_2(hand)
+    card_groups = get_card_groups(hand)
+    no_jokers = if haskey(card_groups, 'J') card_groups['J'] else 0 end
+    no_groups = length(card_groups)    
+    rank = @match (no_groups, no_jokers) begin                
+        (1, _)                    => five_of_a_kind        
+        (2, 0)                    => if in(3, values(card_groups)) full_house else four_of_a_kind end
+        (2, 1)                    => five_of_a_kind
+        (2, 2) || (2, 3) || (2,4) => five_of_a_kind                 
+        (3, 0)                    => if in(3, values(card_groups)) three_of_a_kind else two_pair end
+        (3, 1)                    => if in(3, values(card_groups)) four_of_a_kind else full_house end
+        (3, 2) || (3, 3)          => four_of_a_kind        
+        (4, 0)                    => one_pair            
+        (4, 1) || (4, 2)          => three_of_a_kind        
+        (5, 0)                    => high_card
+        (5, 1)                    => one_pair 
     end    
     return rank
 end
@@ -75,7 +91,6 @@ end
 
 # Get total winnings from all hands.
 function get_total_winnings(cards, hand_classification_function, card_stength_function)
-    lt=(x, y) -> custom_compare(x, y, string_length)
     sorted_cards = sort(cards, lt=(c1,c2) -> compare_cards(c1, c2, hand_classification_function, card_stength_function))
     total_winnings = 0
     for i in 1:length(sorted_cards)
@@ -102,3 +117,6 @@ cards = get_cards(file_name)
 
 # Part 1.
 print("Part 1 answer: ",get_total_winnings(cards, classify_hand_1, get_card_strength_1),"\n")
+
+# Part 2.
+print("Part 2 answer: ",get_total_winnings(cards, classify_hand_2, get_card_strength_2),"\n")

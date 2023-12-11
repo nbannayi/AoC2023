@@ -15,4 +15,5 @@ Current schedule (with stars completed):
 * Day 07: Julia (**)
 
 **Week 2**
-* Day 08: TBC...
+* Day 08: Clojure (in progress)
+* Day 09: TBC...

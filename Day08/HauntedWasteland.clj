@@ -23,8 +23,7 @@
 
 ;; Return last char of string.
 (defn get-last-char [s]
-  (nth s (dec (count s)))
-  )
+  (nth s (dec (count s))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lcm helper functions.
@@ -77,9 +76,7 @@
 ;; Get direction at step.
 (defn get-direction-at-step [directions, n]
   (let [pos (mod (dec n) (count directions))]
-    (nth directions pos)
-    )
-  )
+    (nth directions pos)))
 
 ;; Navigate 1 step and return the next location.
 (defn navigate-step [step, current-location, directions, destinations-map]
@@ -95,9 +92,7 @@
   (let [next-location (navigate-step step, current-location, directions, destinations-map)] 
     (if (= next-location "ZZZ")
       step
-      (recur (inc step) next-location directions destinations-map))
-    )
-  )
+      (recur (inc step) next-location directions destinations-map))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Part 2 specific vectorised methods.
@@ -106,8 +101,7 @@
 ;; Get all keys in destination map that end in A and return as vector. 
 (defn get-start-locations [destination-map]
   (let [locations (into [] (keys destination-map))]
-    (vec (map remove-first-char (filter (fn [l] (= (get-last-char l) \A)) locations))))
-  )
+    (vec (map remove-first-char (filter (fn [l] (= (get-last-char l) \A)) locations)))))
 
 ;; Modification to search for different end condition for part 2
 (defn get-no-steps-vectorised [step, current-location, directions, destinations-map]

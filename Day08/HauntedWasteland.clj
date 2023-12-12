@@ -94,9 +94,9 @@
       step
       (recur (inc step) next-location directions destinations-map))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Part 2 specific vectorised methods.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Part 2 specific functions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Get all keys in destination map that end in A and return as vector. 
 (defn get-start-locations [destination-map]

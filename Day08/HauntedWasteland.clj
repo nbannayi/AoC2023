@@ -33,9 +33,33 @@
         destinations (map parse-map-line (subvec tokens 2 (count tokens)))
         destinations-map (into {} destinations)] 
     destinations-map))
-  
-(def input-file "Day08InputExample.txt")
+
+;; Get direction at step.
+(defn get-direction-at-step [directions, n]
+  (let [pos (mod (dec n) (count directions))]
+    (nth directions pos)
+    )
+  )
+
+;; Navigate throgh the map and return the number of steps to get to the end.
+(defn navigate [step, current-location, directions, destinations-map] 
+  (let [l-or-r (get-direction-at-step directions step)
+        next-location-vec (get destinations-map (str ":" current-location))
+        next-location (if (= l-or-r \L)
+                        (nth next-location-vec 0)
+                        (nth next-location-vec 1))] 
+    ;;(println "step:" step "current-location:" current-location "direction:" l-or-r "next-location:" next-location)
+    (if (= next-location "ZZZ")
+      step
+      (recur (inc step) next-location directions destinations-map))
+    )
+  )
+
+;; Get all input.
+(def input-file "Day08Input.txt")
 (def directions (get-directions input-file))
 (def destinations-map (get-destinations-map input-file))
-(println directions)
-(println destinations-map)
+
+;; Navigate through map.
+(def no-steps (navigate 1 "AAA" directions destinations-map))
+(println "Part 1 answer:" no-steps)

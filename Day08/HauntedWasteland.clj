@@ -5,9 +5,7 @@
   (:gen-class) 
   (:require [clojure.string :as str]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; String helper functions.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Strip first and last chars off a string.
 (defn remove-first-last-char [s]
@@ -25,9 +23,7 @@
 (defn get-last-char [s]
   (nth s (dec (count s))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lcm helper functions.
-;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Greatest common divisor.
 (defn gcd [a b]
@@ -45,9 +41,7 @@
 (defn lcm-of-vector [numbers]
   (reduce lcm 1 numbers))
 
-;;;;;;;;;;;;;;;;;;;;;
 ;; Parsing functions.
-;;;;;;;;;;;;;;;;;;;;;
 
 ;; Parse an individual map line into a vector.
 (defn parse-map-line [map-line]
@@ -70,9 +64,7 @@
         destinations-map (into {} destinations)] 
     destinations-map))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Part 1 specific functions.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Get direction at step.
 (defn get-direction-at-step [directions, n]
@@ -95,9 +87,7 @@
       step
       (recur (inc step) next-location directions destinations-map))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Part 2 specific functions.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Get all keys in destination map that end in A and return as vector. 
 (defn get-start-locations [destination-map]
@@ -116,9 +106,7 @@
   (let [cycles-vector (vec (map (fn [location] (get-no-steps-vectorised step location directions destinations-map)) current-location-vector))]
     (lcm-of-vector cycles-vector)))
 
-;;;;;;;;;;;;;;;;;;;;;;;
 ;; Put it all together.
-;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Get all input.
 (def input-file "Day08Input.txt")

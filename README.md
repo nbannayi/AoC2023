@@ -16,5 +16,5 @@ Current schedule (with stars completed):
 
 **Week 2**
 * Day 08: Clojure (**)
-* Day 09: tcl (not started)
+* Day 09: Elixir
 * Day 10: TBC...

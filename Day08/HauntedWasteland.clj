@@ -37,8 +37,9 @@
 
 ;; Lowest common multiple.
 (defn lcm [a b]
-  (if (zero? a) 0
-      (/ (Math/abs (* a b)) (gcd a b))))
+  (if (zero? a)
+    0
+    (/ (Math/abs (* a b)) (gcd a b))))
 
 ;; Function to work out lcm on an arbitrary length vector.
 (defn lcm-of-vector [numbers]
@@ -75,9 +76,9 @@
 
 ;; Get direction at step.
 (defn get-direction-at-step [directions, n]
-  (let [pos (mod (dec n) (count directions))]
-    (nth directions pos)))
-
+  (->> (mod (dec n) (count directions))
+       (nth directions)))
+  
 ;; Navigate 1 step and return the next location.
 (defn navigate-step [step, current-location, directions, destinations-map]
   (let [l-or-r (get-direction-at-step directions step)

@@ -6,7 +6,7 @@ Please note many of the solutions are unlikely to be particularly good as I'll b
 Current schedule (with stars completed):
 
 **Week 1**
-* Day 01: Commodore 64 BASIC (**)
+* Day 01: BASIC (**)
 * Day 02: COBOL (**)
 * Day 03: Erlang (**)
 * Day 04: Lua (**)

@@ -17,5 +17,5 @@ Current schedule (with stars completed):
 **Week 2**
 * Day 08: Clojure (**)
 * Day 09: Elixir (**)
-* Day 10: FORTRAN
+* Day 10: Fortran
 * Day 11: TBC...

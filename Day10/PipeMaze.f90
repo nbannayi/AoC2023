@@ -2,71 +2,118 @@
 ! Fortran.
 
 ! Store type info.
-module PipeModule
-    implicit none
+MODULE PipeModule
+    IMPLICIT NONE
 
     ! Define a custom type for Pipe segments.
-    integer, parameter :: maxRows = 140
-    integer, parameter :: maxCols = 140
+    INTEGER, PARAMETER :: maxRows = 140
+    INTEGER, PARAMETER :: maxCols = 140
 
-    type :: Pipe
-        character(len=1) :: segment
-        integer :: distance        
-    end type Pipe
+    TYPE :: Pipe
+        CHARACTER(len=1) :: segment
+        INTEGER :: distance        
+    END TYPE Pipe
 
-end module PipeModule
+END MODULE PipeModule
 
 ! Main program
-program PipeMaze
-    use PipeModule
-    implicit none
+PROGRAM PipeMaze
+    USE PipeModule
+    IMPLICIT NONE
 
-    character(len=50) :: inputFile = 'Day10Input.txt'
-    type(Pipe), dimension(maxRows,maxCols) :: pipeGrid
+    CHARACTER(len=50) :: inputFile = 'Day10InputExample.txt'
+    TYPE(Pipe), DIMENSION(maxRows,maxCols) :: pipeGrid
+    INTEGER :: startRow, startCol 
+    CHARACTER(LEN=10) :: myString
+    CHARACTER(LEN=10), PARAMETER :: referenceString = 'Example'
 
-    call ParseData(inputFile, pipeGrid)
-    call PrintGrid(pipeGrid)
+    CALL ParseData(inputFile, pipeGrid)
+    CALL PrintGrid(pipeGrid)
+    CALL GetStartPipe(pipeGrid, startRow, startCol)
+    PRINT *, startRow, startCol
 
-end program pipeMaze
+
+
+    myString = 'Example'
+
+    IF (TRIM(myString) .EQ. TRIM(referenceString)) THEN
+        PRINT *, 'The string is the reference string.'
+    END IF
+
+END PROGRAM pipeMaze
 
 ! Parse input data into 2D array of Pipe segments.
-subroutine ParseData(inputFile, pipeGrid)
-    use PipeModule
-    implicit none
+SUBROUTINE ParseData(inputFile, pipeGrid)
+    USE PipeModule
+    IMPLICIT NONE
 
-    character(len=*), intent(in) :: inputFile
-    type(Pipe), dimension(maxRows,maxCols), intent(out) :: pipeGrid
-    character(len=140) :: line 
-    integer :: r, c, ioStatus
+    CHARACTER(len=*), INTENT(IN) :: inputFile
+    TYPE(Pipe), DIMENSION(maxRows,maxCols), INTENT(OUT) :: pipeGrid
+    CHARACTER(len=140) :: line 
+    INTEGER :: r, c, ioStatus
 
-    open (1, file = inputFile, status = 'old')
+    OPEN (1, file = inputFile, status = 'old')
 
     r = 0
-    do
-        read(1,*, iostat=ioStatus) line
-        if (ioStatus == -1) exit
+    DO
+        READ(1,*, iostat=ioStatus) line
+        IF (ioStatus == -1) EXIT
         r = r + 1
-        do c = 1, maxCols            
+        DO c = 1, maxCols            
             pipeGrid(r,c)%segment = line(c:(c+1)) 
             pipeGrid(r,c)%distance = 0
-        end do
-    end do
+        END DO
+    END DO
 
-end subroutine ParseData
+END SUBROUTINE ParseData
 
 ! Print the pipe grid contents.
-subroutine PrintGrid(pipeGrid)
-    use PipeModule
-    implicit none
+SUBROUTINE PrintGrid(pipeGrid)
+    USE PipeModule
+    IMPLICIT NONE
 
-    integer :: r, c
-    type(Pipe), dimension(maxRows,maxCols), intent(in) :: pipeGrid
+    INTEGER :: r, c
+    TYPE(Pipe), DIMENSION(maxRows,maxCols), INTENT(IN) :: pipeGrid
 
-    do r = 1, maxRows
-        do c = 1, maxCols
-            write(*, '(A)', advance='no') pipeGrid(r,c)%segment
-        end do
-        print *,""
-    end do
+    DO r = 1, maxRows
+        DO c = 1, maxCols
+            WRITE(*, '(A)', advance='no') pipeGrid(r,c)%segment
+        END DO          
+        IF (IACHAR(pipeGrid(r,1)%segment) .EQ. 0) THEN 
+            EXIT
+        END IF
+        PRINT *, ""    
+    END DO
 
-end subroutine PrintGrid
+END SUBROUTINE PrintGrid
+
+! Get start pipe.
+SUBROUTINE GetStartPipe(pipeGrid, startRow, startCol)
+    USE PipeModule
+    IMPLICIT NONE
+
+    INTEGER :: r, c
+    INTEGER, INTENT(OUT) :: startRow, startCol 
+    LOGICAL :: found
+
+    TYPE(Pipe), DIMENSION(maxRows,maxCols), INTENT(IN) :: pipeGrid
+    
+    ! -1's mean not found.
+    startRow = -1
+    startCol = -1
+    found = .FALSE.
+    r = 1
+
+    DO WHILE (.NOT. found .AND. r <= maxRows)
+        DO c = 1, maxCols
+            IF (pipeGrid(r, c)%segment .EQ. 'S') THEN
+                startRow = r
+                startCol = c
+                found  = .TRUE. 
+                EXIT
+            END IF
+        END DO
+        r = r + 1
+    END DO
+
+END SUBROUTINE GetStartPipe

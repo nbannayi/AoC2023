@@ -32,14 +32,6 @@ PROGRAM PipeMaze
     CALL GetStartPipe(pipeGrid, startRow, startCol)
     PRINT *, startRow, startCol
 
-
-
-    myString = 'Example'
-
-    IF (TRIM(myString) .EQ. TRIM(referenceString)) THEN
-        PRINT *, 'The string is the reference string.'
-    END IF
-
 END PROGRAM pipeMaze
 
 ! Parse input data into 2D array of Pipe segments.
@@ -109,7 +101,7 @@ SUBROUTINE GetStartPipe(pipeGrid, startRow, startCol)
             IF (pipeGrid(r, c)%segment .EQ. 'S') THEN
                 startRow = r
                 startCol = c
-                found  = .TRUE. 
+                found = .TRUE. 
                 EXIT
             END IF
         END DO

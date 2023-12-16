@@ -8,11 +8,17 @@ MODULE PipeModule
     ! Define a custom type for Pipe segments.
     INTEGER, PARAMETER :: maxRows = 140
     INTEGER, PARAMETER :: maxCols = 140
-
+    
     TYPE :: Pipe
         CHARACTER(len=1) :: segment
-        INTEGER :: distance        
+        INTEGER :: distance
+        LOGICAL :: isVertex        
     END TYPE Pipe
+    
+    TYPE :: Vertex
+        INTEGER :: r
+        INTEGER :: c
+    END TYPE Vertex
 END MODULE PipeModule
 
 ! Main program
@@ -22,22 +28,57 @@ PROGRAM PipeMaze
 
     CHARACTER(len=50) :: inputFile = 'Day10Input.txt'
     TYPE(Pipe), DIMENSION(maxRows,maxCols) :: pipeGrid
-    INTEGER :: farthestDistance, noHoles
+    INTEGER :: farthestDistance, noHoles, x, y
+    TYPE(Vertex), DIMENSION(20000) :: vertices
 
     ! Get all data into into 2D array.
     CALL ParseData(inputFile, pipeGrid)        
     
     ! Move all the way round.
-    CALL MoveAll(pipeGrid, farthestDistance)
+    CALL MoveAll(pipeGrid, vertices, farthestDistance)
 
     ! Part 1.    
     PRINT *, 'Part 1 answer: ', farthestDistance
 
     ! Part 2.
-    ! TODO.
+    noHoles = GetNoInnerHoles(vertices, farthestDistance)
+    PRINT *, 'Part 2 answer: ', noHoles
 
-    CALL PrintGrid(pipeGrid, 1)
+CONTAINS
 
+! Work out number of inner holes.  See decription below - had to research this one! 
+INTEGER FUNCTION GetNoInnerHoles(vertices, farthestDistance)
+    USE PipeModule
+    IMPLICIT NONE
+
+    INTEGER :: farthestDistance, i, x1, y1, x2, y2, area, areaClockwise, areaAntiClockwise
+    TYPE(Vertex), DIMENSION(20000), INTENT(IN) :: vertices
+
+    ! 1. Work out area using Shoelace formula https://en.wikipedia.org/wiki/Shoelace_formula
+    areaClockwise = 0
+    areaAntiClockwise = 0    
+    DO i = 1,vertices(20000)%r-1
+        x1 = vertices(i)%c
+        y1 = vertices(i)%r
+        x2 = vertices(i+1)%c
+        y2 = vertices(i+1)%r
+        ! Not sure which way orientated so try both.
+        areaClockwise = areaClockwise + (x1 * y2) - (x2 * y1)
+        areaAntiClockwise = areaAntiClockwise + (x2 * y1) - (x1 * y2)
+    END DO
+    
+    ! Pick correct orintation.
+    IF (areaClockwise .GT. 0) THEN
+        area = areaClockwise/2
+    ELSE
+        area = areaAntiClockwise/2
+    END IF
+    
+    ! 2. Use Pick's theorem to find internal points https://en.wikipedia.org/wiki/Pick%27s_theorem, (b/2) already
+    ! calculated in part 1 as farthestDistance.  So this will just just be area - farthestDistance + 1.
+    GetNoInnerHoles = area - farthestDistance + 1        
+
+END FUNCTION GetNoInnerHoles
 END PROGRAM pipeMaze
 
 ! Parse input data into 2D array of Pipe segments.
@@ -255,28 +296,52 @@ SUBROUTINE MoveSingle(pipeGrid, r, c, isComplete)
 END SUBROUTINE MoveSingle
 
 ! Move all the way round.
-SUBROUTINE MoveAll(pipeGrid, farthestDistance)
+SUBROUTINE MoveAll(pipeGrid, vertices, farthestDistance)
     USE PipeModule
     IMPLICIT NONE
 
-    INTEGER :: startRow, startCol, r, c, i
+    INTEGER :: startRow, startCol, r, c, i, vertexIndex
     INTEGER, INTENT(OUT) :: farthestDistance
     TYPE(Pipe), DIMENSION(maxRows,maxCols) :: pipeGrid
     LOGICAL :: isComplete = .FALSE.
+    TYPE(Vertex), DIMENSION(20000), INTENT(OUT) :: vertices
+    CHARACTER(LEN=1) :: segment
 
     ! Find start location.
     CALL GetStartPipe(pipeGrid, startRow, startCol)    
     r = startRow
     c = startCol
 
+    ! Set up first vertex.
+    vertexIndex = 1
+    vertices(vertexIndex)%r = r
+    vertices(vertexIndex)%c = c
+
     ! Get first location.
     CALL FirstMove(pipeGrid, r, c)
+    vertexIndex = 2
+    vertices(vertexIndex)%r = r
+    vertices(vertexIndex)%c = c
 
-    ! Navigate round.    
+    ! Navigate round and store vertices.    
     DO WHILE (.NOT. isComplete)
-        CALL MoveSingle(pipeGrid,r,c, isComplete)
+        CALL MoveSingle(pipeGrid,r,c,isComplete)
+        segment = pipeGrid(r,c)%segment
+        IF (segment .EQ. 'J' .OR. segment .EQ. '7' .OR. segment .EQ. 'F' .OR. segment .EQ. 'L') THEN
+            vertexIndex = vertexIndex + 1
+            vertices(vertexIndex)%r = r
+            vertices(vertexIndex)%c = c
+        END IF
     END DO
     
+    ! Set last vertex.
+    vertexIndex = vertexIndex + 1
+    vertices(vertexIndex)%r = vertices(1)%r
+    vertices(vertexIndex)%c = vertices(1)%c
+    ! Put size in last element (but of a bodge I know.)
+    vertices(20000)%r = vertexIndex
+    vertices(20000)%c = vertexIndex
+
     ! Get farthest distance.
     farthestDistance = 0
     DO r = 1,maxRows
@@ -288,53 +353,3 @@ SUBROUTINE MoveAll(pipeGrid, farthestDistance)
     END DO
     farthestDistance = farthestDistance/2    
 END SUBROUTINE MoveAll
-
-! Fllod fill the pipe maze.
-RECURSIVE SUBROUTINE FloodFill(pipeGrid, r, c)
-    USE PipeModule
-    IMPLICIT NONE
-  
-    TYPE(Pipe), DIMENSION(maxRows,maxCols), INTENT(INOUT) :: pipeGrid    
-    INTEGER, INTENT(IN) :: r, c
-
-    ! Check within boundaries.
-    IF (r < 1 .OR. r > maxRows .OR. c < 1 .OR. c > maxCols) THEN
-        RETURN
-    END IF
-
-    ! Check if current pipe segment is a gap.
-    IF (pipeGrid(r, c)%distance /= 2) THEN
-        RETURN
-    END IF
-
-    ! Fill the current cell with a space and make distance 2.
-    pipeGrid(r, c)%distance = 3
-
-    ! Now do neighbouring pipes.
-    CALL FloodFill(pipeGrid, r+1, c) ! Down
-    CALL FloodFill(pipeGrid, r-1, c) ! Up
-    CALL FloodFill(pipeGrid, r, c+1) ! Right
-    CALL FloodFill(pipeGrid, r, c-1) ! Left
-
-END SUBROUTINE FloodFill
-
-! Get no enclosed holes for part 2, ssumed flood fill has been run.
-SUBROUTINE CountHoles(pipeGrid, noHoles)
-    USE PipeModule
-    IMPLICIT NONE
-
-    TYPE(Pipe), DIMENSION(maxRows,maxCols), INTENT(IN) :: pipeGrid
-    INTEGER :: r, c
-    INTEGER, INTENT(OUT) :: noHoles
-
-    ! Get farthest distance.    
-    noHoles = 0
-    DO r = 1,maxRows
-        DO c = 1,maxCols
-            IF (pipeGrid(r,c)%distance .EQ. 3) THEN
-                noHoles = noHoles + 1
-            END IF
-        END DO
-    END DO
-
-END SUBROUTINE CountHoles

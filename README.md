@@ -19,5 +19,5 @@ Current schedule (with stars completed):
 * Day 09: Elixir (**)
 * Day 10: Fortran (**)
 * Day 11: Pascal (**)
-* Day 12: tcl/tk
+* Day 12: Ruby (*)
 * Day 13: TBC...

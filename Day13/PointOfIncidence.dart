@@ -2,6 +2,7 @@
 // Dart.
 import 'dart:io';
 import 'Mirror.dart';
+import 'dart:math';
 
 void main() {
   // Parse raw input.

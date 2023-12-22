@@ -23,3 +23,12 @@ condition_records1.each do |cr|
   sum_counts1 += cr.get_no_valid_candidates
 end
 puts "Part 1 answer: #{sum_counts1}"
+
+# Work out sum of counts for part 2.
+sum_counts2 = 0
+
+condition_records2 = condition_records1.map(&:unfold)
+condition_records2.each do |cr|
+  sum_counts2 += cr.get_no_valid_candidates_2
+end
+puts "Part 2 answer: #{sum_counts2}"

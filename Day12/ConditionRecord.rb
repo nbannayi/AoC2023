@@ -3,6 +3,7 @@ class ConditionRecord
   def initialize(pattern, groups)
     @pattern = pattern
     @groups  = groups
+    @cache   = {}
   end
 
   # Displays the pattern in the condition record.
@@ -17,6 +18,16 @@ class ConditionRecord
     puts "The groups are: "
     @groups.each { |number| puts number }
     puts
+  end
+
+  # Groups accessor.
+  def get_groups
+    return @groups
+  end
+
+  # Pattern accessor.
+  def get_pattern
+    return @pattern
   end
 
   # Unfold and return updated object.
@@ -112,5 +123,42 @@ class ConditionRecord
       .map { |p| build_permutation(p) }
       .select { |c| validate(c) }
       .length
+  end
+
+  # Non-monkey, DP'ised version for part 2.
+  def get_no_valid_candidates_2_inner(i, j)
+    if @cache.key?([i, j])
+      return @cache[[i, j]]
+    end
+    if i == 0 && j == 0
+      return 1
+    elsif i == 0
+      return 0
+    elsif j == 0
+      if @pattern.slice(0..i-1).include?("#")
+        return 0
+      else
+        return 1
+      end
+    elsif @pattern[i-1] == "."
+      result = get_no_valid_candidates_2_inner(i-1, j)
+    else
+      num = @groups[j-1]
+      if num > i || @pattern.slice(i-num..i-1).include?(".")
+        result = 0
+      elsif i > num && @pattern[i-num-1] == "#"
+        result = 0
+      else
+        result = get_no_valid_candidates_2_inner([i-num-1, 0].max, j-1)
+      end
+      if @pattern[i-1] == "?"
+        result += get_no_valid_candidates_2_inner(i-1, j)
+      end
+    end
+    @cache[[i, j]] = result
+    return result
+  end
+  def get_no_valid_candidates_2
+    return get_no_valid_candidates_2_inner(@pattern.length, @groups.length)
   end
 end

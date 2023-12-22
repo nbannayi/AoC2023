@@ -20,5 +20,5 @@ Current schedule (with stars completed):
 * Day 10: Fortran (⭐️⭐️)
 * Day 11: Pascal (⭐️⭐️)
 * Day 12: Ruby (⭐️⭐️)
-* Day 13: Dart
+* Day 13: Dart (⭐️)
 * Day 14: TBC...

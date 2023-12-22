@@ -6,30 +6,6 @@ class ConditionRecord
     @cache   = {}
   end
 
-  # Displays the pattern in the condition record.
-  def display_pattern
-    puts "The pattern is: "
-    puts "#{@pattern}"
-    puts
-  end
-
-  # Displays the groups array in the condition record.
-  def display_groups
-    puts "The groups are: "
-    @groups.each { |number| puts number }
-    puts
-  end
-
-  # Groups accessor.
-  def get_groups
-    return @groups
-  end
-
-  # Pattern accessor.
-  def get_pattern
-    return @pattern
-  end
-
   # Unfold and return updated object.
   def unfold
     unfolded_pattern = ""

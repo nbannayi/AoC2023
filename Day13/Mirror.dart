@@ -4,7 +4,7 @@ import 'ReflectionLine.dart';
 class Mirror {
   List<String> rows;
 
-  Mirror(String rawText) : rows = rawText.split('\n');
+  Mirror(List<String> inputRows) : rows = inputRows;
 
   // Display all rows contained in mirror.
   void display() {
@@ -27,11 +27,94 @@ class Mirror {
     return column;
   }
 
+  // Determine if a pair of reflection lines contain a smudge.
+  bool linesContainSmudge(ReflectionLine line1, ReflectionLine line2) {
+    var diffSum = 0;
+    var line1Text = '';
+    var line2Text = '';
+    if (line1.reflectionType == ReflectionType.horizonal) {
+      line1Text = getRow(line1.position);
+      line2Text = getRow(line2.position);
+    } else {
+      line1Text = getColumn(line1.position);
+      line2Text = getColumn(line2.position);
+    }
+    for (int i = 0; i < line1Text.length; i++) {
+      if (line1Text[i] != line2Text[i]) diffSum++;
+    }
+    return diffSum == 1;
+  }
+
+  // Find a pair of smudge lines.
+  List<ReflectionLine> getSmudgeLines() {
+    List<ReflectionLine> foundLines = [];
+    // Search horizontal.
+    for (int i = 0; i < this.rows.length; i++) {
+      for (int j = i + 1; j < this.rows.length; j++) {
+        var line1 = ReflectionLine(ReflectionType.horizonal, i);
+        var line2 = ReflectionLine(ReflectionType.horizonal, j);
+        if (linesContainSmudge(line1, line2)) {
+          foundLines.add(line1);
+          foundLines.add(line2);
+        }
+      }
+    }
+    // Search verticals.
+    for (int i = 0; i < this.rows[0].length; i++) {
+      for (int j = i + 1; j < this.rows[0].length; j++) {
+        var line1 = ReflectionLine(ReflectionType.vertical, i);
+        var line2 = ReflectionLine(ReflectionType.vertical, j);
+        if (linesContainSmudge(line1, line2)) {
+          foundLines.add(line1);
+          foundLines.add(line2);
+        }
+      }
+    }
+    return foundLines;
+  }
+
+  // Given a pair of smudge lines, resturn a new mirror object with correction.
+  Mirror updateSmudgeLines(ReflectionLine line1, ReflectionLine line2) {
+    List<String> newRows = List.from(rows);
+    if (line1.reflectionType == ReflectionType.horizonal) {
+      var line1Text = getRow(line1.position);
+      newRows[line1.position] = line1Text;
+      newRows[line2.position] = line1Text;
+    } else {
+      var line1Text = getColumn(line1.position);
+      for (int i = 0; i < line1Text.length; i++) {
+        var newString = newRows[i]
+            .replaceRange(line1.position, line1.position + 1, line1Text[i])
+            .replaceRange(line2.position, line2.position + 1, line1Text[i]);
+        newRows[i] = newString;
+      }
+    }
+    return Mirror(newRows);
+  }
+
+  // Get alternate reflectiin line when smudge corrected.
+  ReflectionLine getAlternateReflectionLine() {
+    var originalReflectionLine = getReflectionLines()[0];
+    var originalSummary = originalReflectionLine.summarise();
+    var alternateReflectionLine = ReflectionLine(ReflectionType.horizonal, 0);
+    var smls = getSmudgeLines();
+    for (int i = 0; i <= smls.length - 2; i += 2) {
+      var newMirror = updateSmudgeLines(smls[i], smls[i + 1]);
+      var rls = newMirror.getReflectionLines();
+      for (var rl in rls) {
+        if (rl.summarise() != originalSummary) {
+          alternateReflectionLine = rl;
+          break;
+        }
+      }
+    }
+    return alternateReflectionLine;
+  }
+
   // Get reflection line in this mirror.
   List<ReflectionLine> getReflectionLines() {
     var noRows = rows.length;
-    List<ReflectionLine> reflectionLines = [];
-
+    List<ReflectionLine> output = [];
     // Try to find horizontals.
     for (var r = 0; r <= noRows - 2; r++) {
       var foundHorizontal = false;
@@ -47,10 +130,8 @@ class Mirror {
           offset++;
         }
       }
-      // If found exit.
       if (foundHorizontal) {
-        reflectionLines
-            .add(new ReflectionLine(ReflectionType.horizonal, r + 1));
+        output.add(ReflectionLine(ReflectionType.horizonal, r + 1));
       }
     }
 
@@ -70,12 +151,10 @@ class Mirror {
           offset++;
         }
       }
-      // If found exit.
       if (foundVertical) {
-        reflectionLines.add(new ReflectionLine(ReflectionType.vertical, c + 1));
+        output.add(ReflectionLine(ReflectionType.vertical, c + 1));
       }
     }
-
-    return reflectionLines;
+    return output;
   }
 }

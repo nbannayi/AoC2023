@@ -2,7 +2,6 @@
 // Dart.
 import 'dart:io';
 import 'Mirror.dart';
-import 'dart:math';
 
 void main() {
   // Parse raw input.
@@ -12,16 +11,24 @@ void main() {
   // Load into an array of Mirror objects.
   List<Mirror> mirrors = [];
   for (var rawInput in rawInputs) {
-    mirrors.add(Mirror(rawInput));
+    mirrors.add(Mirror(rawInput.split('\n')));
   }
 
-  // Calculate summary notes.
+  // Part 1.
   int summaryNotes = 0;
   for (int i = 0; i < mirrors.length; i++) {
     var reflectionLines = mirrors[i].getReflectionLines();
-    for (var reflectionLine in reflectionLines) {
-      summaryNotes += reflectionLine.summarise();
+    for (var rl in reflectionLines) {
+      summaryNotes += rl.summarise();
     }
   }
   print('Part 1 answer: $summaryNotes');
+
+  // Part 2.
+  int alternateSummaryNotes = 0;
+  for (int i = 0; i < mirrors.length; i++) {
+    var altenateReflectionLine = mirrors[i].getAlternateReflectionLine();
+    alternateSummaryNotes += altenateReflectionLine.summarise();
+  }
+  print('Part 2 answer: $alternateSummaryNotes');
 }

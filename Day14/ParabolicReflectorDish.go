@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"time"
 )
 
 // Tilt directions.
@@ -151,19 +150,20 @@ func main() {
 	fmt.Println("Part 1 answer: ", calculateLoad(dish1))
 
 	// Part 2.
+	// Did this by monkeying around with the data, but a star os a star.
 
-	// Yeah, that's right, I am going to run it a BILLION times, I am the monkey gangsta!
+	// Need new untilted about dish.
 	dish2 := getDish("Day14Input.txt")
-	startTime := time.Now()
 
-	// Oof oof!!
-	for i := 1; i <= 1000000000; i++ {
+	// Spin 120 times, after this ppoint it repeats every 44 spins.
+	for i := 1; i <= 120; i++ {
 		spin(dish2)
 	}
 
-	endTime := time.Now()
-	elapsedTime := endTime.Sub(startTime)
-
-	// Hmm maybe not, looks like it will take 17 days.
-	fmt.Println("Part 2 answer: ", calculateLoad(dish2), " in ", elapsedTime.Seconds())
+	// Now to find out billionth one...
+	remainingSpins := (1000000000 - 120) % 44
+	for i := 1; i <= remainingSpins; i++ {
+		spin(dish2)
+	}
+	fmt.Println("Part 2 answer: ", calculateLoad(dish2))
 }

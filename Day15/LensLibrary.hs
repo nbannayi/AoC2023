@@ -5,13 +5,11 @@ import Data.List.Split (splitOn)
 
 -- Hash a single string.
 hashString :: String -> Int
-hashString = foldl (\acc char -> 
-    17 * (acc + fromEnum char) `mod` 256) 0
+hashString = foldl (\acc char -> 17 * (acc + fromEnum char) `mod` 256) 0
 
 -- Hash a list of strings.
 hashStringList :: [String] -> Int
-hashStringList = foldl (\acc step ->
-    acc + hashString step) 0
+hashStringList = foldl (\acc step -> acc + hashString step) 0
 
 main :: IO ()
 main = do    

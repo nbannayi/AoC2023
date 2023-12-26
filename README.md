@@ -24,4 +24,5 @@ Current schedule (with stars completed):
 * Day 14: Go (⭐️⭐️)
 
 **Week 3**
-* Day 15: TBC
+* Day 15: Haskell (⭐️)
+* Day 16: TBC

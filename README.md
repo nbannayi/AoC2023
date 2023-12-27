@@ -24,5 +24,6 @@ Current schedule (with stars completed):
 * Day 14: Go (⭐️⭐️)
 
 **Week 3**
-* Day 15: Haskell (⭐️)
-* Day 16: TBC
+* Day 15: Haskell (⭐️⭐️)
+* Day 16: OCaml
+* Day 17: TBC

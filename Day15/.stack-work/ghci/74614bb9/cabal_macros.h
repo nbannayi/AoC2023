@@ -30,16 +30,6 @@
   (major1) == 0 && (major2) <  2 || \
   (major1) == 0 && (major2) == 2 && (minor) <= 4)
 #endif /* MIN_VERSION_split */
-/* package unordered-containers-0.2.19.1 */
-#ifndef VERSION_unordered_containers
-#define VERSION_unordered_containers "0.2.19.1"
-#endif /* VERSION_unordered_containers */
-#ifndef MIN_VERSION_unordered_containers
-#define MIN_VERSION_unordered_containers(major1,major2,minor) (\
-  (major1) <  0 || \
-  (major1) == 0 && (major2) <  2 || \
-  (major1) == 0 && (major2) == 2 && (minor) <= 19)
-#endif /* MIN_VERSION_unordered_containers */
 
 /* tool gcc-13.0.0 */
 #ifndef TOOL_VERSION_gcc
@@ -123,8 +113,11 @@
 #endif /* MIN_TOOL_VERSION_runghc */
 
 #ifndef CURRENT_COMPONENT_ID
-#define CURRENT_COMPONENT_ID "LensLibrary-0.1.0.0-9F6cXKmjCLI1FRomSbkwCE-LensLibrary"
+#define CURRENT_COMPONENT_ID "LensLibrary-0.1.0.0-4pqoLKFe660Fa5USfRrOI5-LensLibrary"
 #endif /* CURRENT_COMPONENT_ID */
 #ifndef CURRENT_PACKAGE_VERSION
 #define CURRENT_PACKAGE_VERSION "0.1.0.0"
 #endif /* CURRENT_PACKAGE_VERSION */
+
+#undef CURRENT_PACKAGE_KEY
+#undef CURRENT_COMPONENT_ID

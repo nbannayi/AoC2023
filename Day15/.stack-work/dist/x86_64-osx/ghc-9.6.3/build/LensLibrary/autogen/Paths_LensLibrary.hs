@@ -47,7 +47,7 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 bindir     = "/Users/Nick/development/workspace/AoC2023/Day15/.stack-work/install/x86_64-osx/b0b1a6ec3d8f1e54a4089d69a285dec54d7b29cf3d233368ee005975a500ea78/9.6.3/bin"
-libdir     = "/Users/Nick/development/workspace/AoC2023/Day15/.stack-work/install/x86_64-osx/b0b1a6ec3d8f1e54a4089d69a285dec54d7b29cf3d233368ee005975a500ea78/9.6.3/lib/x86_64-osx-ghc-9.6.3/LensLibrary-0.1.0.0-4pqoLKFe660Fa5USfRrOI5-LensLibrary"
+libdir     = "/Users/Nick/development/workspace/AoC2023/Day15/.stack-work/install/x86_64-osx/b0b1a6ec3d8f1e54a4089d69a285dec54d7b29cf3d233368ee005975a500ea78/9.6.3/lib/x86_64-osx-ghc-9.6.3/LensLibrary-0.1.0.0-9F6cXKmjCLI1FRomSbkwCE-LensLibrary"
 dynlibdir  = "/Users/Nick/development/workspace/AoC2023/Day15/.stack-work/install/x86_64-osx/b0b1a6ec3d8f1e54a4089d69a285dec54d7b29cf3d233368ee005975a500ea78/9.6.3/lib/x86_64-osx-ghc-9.6.3"
 datadir    = "/Users/Nick/development/workspace/AoC2023/Day15/.stack-work/install/x86_64-osx/b0b1a6ec3d8f1e54a4089d69a285dec54d7b29cf3d233368ee005975a500ea78/9.6.3/share/x86_64-osx-ghc-9.6.3/LensLibrary-0.1.0.0"
 libexecdir = "/Users/Nick/development/workspace/AoC2023/Day15/.stack-work/install/x86_64-osx/b0b1a6ec3d8f1e54a4089d69a285dec54d7b29cf3d233368ee005975a500ea78/9.6.3/libexec/x86_64-osx-ghc-9.6.3/LensLibrary-0.1.0.0"

@@ -3,10 +3,10 @@ import java.io.File
 /**
  * Contraption class for Advent of Code day 16.
  */
-class Contraption(inputFile: String) {
+class Contraption(inputFile: String, startingPoint: Point) {
 
     private val inputLines = File(inputFile).readLines()
-    private var beams: List<Beam> = listOf(Beam())
+    private var beams: List<Beam> = listOf()
     var visitedPoints : MutableSet<Point> = mutableSetOf()
 
     // Store contraption grid layout.
@@ -16,9 +16,32 @@ class Contraption(inputFile: String) {
 
     // Add first point of beam.
     init {
-        val point = Point(0,0, Direction.EAST)
-        beams[0].points += listOf(point)
-        visitedPoints.add(point)
+        beams += Beam(startingPoint.x, startingPoint.y, startingPoint.dir)
+        beams[0].points += listOf(startingPoint)
+        visitedPoints.add(startingPoint)
+    }
+
+    // Reset all state at a given starting point.
+    fun reset(startingPoint: Point) {
+        beams = listOf()
+        beams += Beam(startingPoint.x, startingPoint.y, startingPoint.dir)
+        visitedPoints = mutableSetOf()
+        beams[0].points += listOf(startingPoint)
+        visitedPoints.add(startingPoint)
+    }
+
+    // Return all points around grid for part 2.
+    fun getAllStartingPoints() : MutableList<Point> {
+        var points : MutableList<Point> = mutableListOf()
+        for (c in grid[0].indices) {
+            points.add(Point(c,0,Direction.SOUTH))
+            points.add(Point(c,grid.indices.last,Direction.NORTH))
+        }
+        for (r in grid.indices) {
+            points.add(Point(0,r,Direction.EAST))
+            points.add(Point(grid[0].indices.last, r,Direction.WEST))
+        }
+        return points
     }
 
     // Display the contents of the grid.
@@ -118,7 +141,8 @@ class Contraption(inputFile: String) {
                 Direction.EAST -> Point(x+1,y, Direction.EAST)
                 Direction.WEST -> Point(x-1,y, Direction.WEST)
             }
-            if (newPosition.x >= 0 && newPosition.x <= grid[0].indices.last && newPosition.y >= 0 && newPosition.y <= grid.indices.last) {
+            if (newPosition.x >= 0 && newPosition.x <= grid[0].indices.last && newPosition.y >= 0 &&
+                newPosition.y <= grid.indices.last) {
                 visitedPoints.add(newPosition)
                 beam.points += listOf(newPosition)
                 beam.x = newPosition.x

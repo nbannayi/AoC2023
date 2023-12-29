@@ -26,5 +26,5 @@ Current schedule (with stars completed):
 **Week 3**
 * Day 15: Haskell (⭐️⭐️)
 * Day 16: Kotlin (⭐️⭐️)
-* Day 17: OCaml
+* Day 17: C/C++ (⭐️⭐️)
 * Day 18: TBC

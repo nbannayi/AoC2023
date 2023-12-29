@@ -55,30 +55,36 @@ int Move::getNextMove(int dir, int noRows, int noCols, int **heatmap, int noCons
 }
 
 // Get a set of all neighbours.
-std::set<Move> Move::getNeighbours(int** heatMap, int noRows, int noCols) 
+std::set<Move> Move::getNeighbours(int** heatMap, int noRows, int noCols, int ultraCrucibles) 
 {
     std::set<Move> neighbours;
 
-    int leftDir = (node.getDir() - 1) % 4;
-    while (leftDir < 0) leftDir += 4;
-
-    Move leftMove(Node(0, 0, 1, 0), 0); // Default.
-    int leftResult = getNextMove(leftDir, noRows, noCols, heatMap, 1, leftMove);
-    if (leftResult == 0) 
+    if (ultraCrucibles == 0 || node.getNoConsecutive() >= 4)
     {
-        neighbours.insert(leftMove);
+        int leftDir = (node.getDir() - 1) % 4;
+        while (leftDir < 0) leftDir += 4;
+
+        Move leftMove(Node(0, 0, 1, 0), 0); // Default.
+        int leftResult = getNextMove(leftDir, noRows, noCols, heatMap, 1, leftMove);
+        if (leftResult == 0) 
+        {
+            neighbours.insert(leftMove);
+        }
+
+        int rightDir = (node.getDir() + 1) % 4;    
+        Move rightMove(Node(0, 0, 1, 0), 0); // Default.
+        int rightResult = getNextMove(rightDir, noRows, noCols, heatMap, 1, rightMove);
+        if (rightResult == 0) 
+        {
+            neighbours.insert(rightMove);
+        }
     }
 
-    int rightDir = (node.getDir() + 1) % 4;    
-    Move rightMove(Node(0, 0, 1, 0), 0); // Default.
-    int rightResult = getNextMove(rightDir, noRows, noCols, heatMap, 1, rightMove);
-    if (rightResult == 0) 
-    {
-        neighbours.insert(rightMove);
-    }
+    // Increae length for part 2.
+    int consecutiveLength = (ultraCrucibles == 0) ? 3 : 10;
 
     Move aheadMove(Node(0, 0, 1, 0), 0); // Default.
-    if (node.getNoConsecutive() < 3) 
+    if (node.getNoConsecutive() < consecutiveLength) 
     {
         int aheadResult = getNextMove(node.getDir(), noRows, noCols, heatMap, node.getNoConsecutive()+1, aheadMove);        
         if (aheadResult == 0) 

@@ -26,7 +26,7 @@ class Move
 
         int getNextMove(int dir, int noRows, int noCols, int **heatmap, int noConsecutive, Move &move);
 
-        std::set<Move> getNeighbours(int** heatMap, int noRows, int noCols);
+        std::set<Move> getNeighbours(int** heatMap, int noRows, int noCols, int ultraCrucibles);
 
         // Overload the << operator to display a Move instance.
         friend std::ostream& operator<<(std::ostream& os, const Move& move) 

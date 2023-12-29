@@ -40,7 +40,8 @@ int** parseInputFile(const char* inputFile, int* numRows, int* numCols)
 }
 
 // Use Dijkstra's algorithm to navigate around the heatmap.
-int navigate(int **heatMap, int noRows, int noCols, int goalx, int goaly)
+// Pass utlraCrucibles = 0 for part 1, pass as 1 for part 2.
+int navigate(int **heatMap, int noRows, int noCols, int goalx, int goaly, int ultraCrucibles)
 {
     // Add start nodes to priority queue.
     Node node1(1,0,1,EAST);
@@ -79,14 +80,16 @@ int navigate(int **heatMap, int noRows, int noCols, int goalx, int goaly)
         visitedNodes.insert(currentNode);
 
         // If we have reached the end, exit.
-
         if (currentNode.getX() == goalx && currentNode.getY() == goaly)
         {
-            return currentMove.getHeatloss();
+            if (ultraCrucibles == 0 || (ultraCrucibles = 1 && currentNode.getNoConsecutive() >= 4))
+            {
+                return currentMove.getHeatloss();
+            }            
         }
 
         // Get all neighbours.
-        std::set<Move> neighbours = currentMove.getNeighbours(heatMap, noRows, noCols);
+        std::set<Move> neighbours = currentMove.getNeighbours(heatMap, noRows, noCols, ultraCrucibles);
         
         // Add neighbours to queue.
         for (const auto& neighbour : neighbours) 
@@ -110,9 +113,13 @@ int main()
     // Parse input data into a 2D array of blocks.
     int **heatMap = parseInputFile(filename, &noRows, &noCols);
 
-    // Find path.
-    int result = navigate(heatMap, noRows, noCols, noRows-1, noCols-1);
+    // Find path 1.
+    int result1 = navigate(heatMap, noRows, noCols, noRows-1, noCols-1, 0);    
+    cout << "Part 1 answer: " << result1 << endl;
+
+    // Find path 2.
+    int result2 = navigate(heatMap, noRows, noCols, noRows-1, noCols-1, 1);    
+    cout << "Part 2 answer: " << result2 << endl;
     
-    cout << "Part 1 answer: " << result << endl;
     return 0;
 }

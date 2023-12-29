@@ -1,6 +1,7 @@
 {
     "julia.environmentPath": "/Users/Nick/development/workspace/AoC2023/Day17",
     "files.associations": {
-        "queue": "c"
+        "queue": "c",
+        "unordered_set": "cpp"
     }
 }

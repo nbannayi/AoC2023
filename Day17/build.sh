@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc ClumsyCrucible.c BlockHeap.c Dijkstra.c -o ClumsyCrucible
+g++ -std=c++11 ClumsyCrucible.cpp Node.cpp Move.cpp -o ClumsyCrucible

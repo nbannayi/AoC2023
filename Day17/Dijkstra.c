@@ -91,9 +91,6 @@ void Dijkstra_navigate(Block **map, int numRows, int numCols, Block start, int *
     /* Insert the starting block into the priority queue. */
     BlockHeap_insert(queue, start);
 
-    /* Keep track of consecutive moves in each direction. */
-    int consecutiveMoves[4] = {0};  // 0: up, 1: down, 2: left, 3: right
-
     /* Keep track of predecessors for path reconstruction */
     predecessors = (Block**)malloc(numRows * sizeof(Block*));    
     for (int i = 0; i < numRows; i++) 
@@ -106,7 +103,7 @@ void Dijkstra_navigate(Block **map, int numRows, int numCols, Block start, int *
     {        
         /* Extract the node with the smallest tentative distance from the priority queue. */
         Block currentBlock = BlockHeap_extractMin(queue);
-
+        
         /* Process neighbours of the current node. */
         for (int dir = 0; dir < 4; dir++) // Assuming 4 directions: up, down, left, right.
         {  
@@ -121,21 +118,19 @@ void Dijkstra_navigate(Block **map, int numRows, int numCols, Block start, int *
 
                 /* Update the distance if it's smaller */
                 if (tentativeHeatLoss < heatLosses[newRow][newCol]) 
-                {
-                    heatLosses[newRow][newCol] = tentativeHeatLoss;
-
-                    /* Update predecessor for path reconstruction */
-                    predecessors[newRow][newCol] = currentBlock;
-
-                    /* Insert the updated neighbor into the priority queue */
+                {                    
+                    /* Insert the updated neighbour into the priority queue */
                     Block neighbour = {newRow, newCol, tentativeHeatLoss};
                     BlockHeap_insert(queue, neighbour);
+
+                    heatLosses[newRow][newCol] = tentativeHeatLoss;
+                    predecessors[newRow][newCol] = currentBlock;
                 }
             }
         }
     }
 
-    Dijkstra_displayShortestPath(predecessors, 0, 0, numRows-1, 9);
+    Dijkstra_displayShortestPath(predecessors, 0, 0, numRows-1, numCols-1);
     Dijkstra_displayShortestDistances(heatLosses, numRows, numCols);
     Dijkstra_cleanup(predecessors, heatLosses, numRows, numCols);
 }

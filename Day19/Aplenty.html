@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Advent of Code 2023: Day 19 - Aplenty</title>
-    <!-- General purpose functions here. -->
+    <title>Advent of Code 2023: Day 19 - Aplenty</title>    
     <script>    
+        // General purpose functions.
         // Write text to web page.
         function write(text) {
             let paragraph = document.createElement("p")
@@ -14,6 +14,7 @@
         function displayObject(object) {
             write(JSON.stringify(object, null, 2))
         }
+        // Parsing functions.
         // Parse a part rating into an object.
         function parsePartRating(partRatingString) {
             let jsonPartRatingString = partRatingString
@@ -25,7 +26,7 @@
             return partRating
         }
         // Parse a workflow into an object.
-        function parseWorkflow(inputString) {
+        function parseWorkflow(inputString) {            
             const matches = inputString.match(/(\w+){(.*?)}/)
             if (matches && matches[1] && matches[2]) {
                 const label = matches[1];
@@ -44,7 +45,8 @@
             return null
         }        
         // Parse all input.
-        function processInput(file, callback) {
+        function parseInputFile(file, callback) {
+            write("Parsing input file.")            
             // Create a new FileReader
             var reader = new FileReader()
             // Define the callback for when the file is loaded
@@ -53,13 +55,85 @@
                 var fileContent = event.target.result
                 // Process the file content as needed
                 const sections = fileContent.split('\n\n')
+                // Get workflows as an array of json objects.
                 const workflows = sections[0].split('\n').map(workflow => parseWorkflow(workflow))
+                // Put array of json objects into a map for efficiency.
+                let workflowsMap = new Map()
+                workflows.forEach(workflow => {
+                    let key = Object.entries(workflow)[0][0]                    
+                    workflowsMap.set(key, workflow[key])
+                })
+                // Get array of part ratings.
                 const partRatings = sections[1].split('\n').map(partRating => parsePartRating(partRating))
                 // Call the provided callback with the results
-                callback([workflows, partRatings])
+                callback([workflowsMap, partRatings])
             }
             // Read the file as text
             reader.readAsText(file)
+        }
+        // Processing functions.
+        // Process a partRating given a partRating and a map of workflows.
+        // Retrun true if accepted, false if refjected.
+        // This needs to be reworked to go through workflow first.
+        function isPartRatingAccepted(partRating, workflowsMap) {
+            // Returns match label if found, otherwise "".
+            function matchLabel(key, value, workflow) {                                
+                for (const kvp of workflow) {
+                    const wKey = Object.keys(kvp)[0]
+                    const newLabel = kvp[wKey]                                         
+                    let wfLabel = wKey.substring(0,1)                    
+                    let wfOperator = wKey.substring(1,2)
+                    let wfValue = wKey.substring(2)                                        
+                    if (wKey == "last") {
+                        if (key == "s") 
+                            return newLabel 
+                        else 
+                            return ""                        
+                    }                    
+                    if (wfLabel == key && wfOperator == ">" && parseInt(value) > parseInt(wfValue)) {
+                        return newLabel
+                    } 
+                    if (wfLabel == key && wfOperator == "<" && parseInt(value) < parseInt(wfValue)) {                        
+                        return newLabel
+                    }
+                }
+            }
+            // First, get workflow labelled in.
+            let wfCurrent = workflowsMap.get("in")
+            // Initialise some control flags.
+            let processed = false
+            let newLabel = ""
+            // Now, while not processed...
+            while (!processed) {
+                // Iterate through all ratings in part rating.
+                for (const [key, value] of Object.entries(partRating)) {
+                    // Now for each part rating try to find a match on current workflow.
+                    newLabel = matchLabel(key, value, wfCurrent) 
+                    // If not rejected, redirect to next one.
+                    if (newLabel != "A" && newLabel != "R") {
+                        // If none found and not last progress to next one.
+                        if (newLabel != "") 
+                            wfCurrent = workflowsMap.get(newLabel)
+                        else
+                            continue
+                    // Otherwise signal processing complete and exit.
+                    } else {
+                        processed = true
+                        break;
+                    }
+                }
+            }
+            // Finally newLabel we end up with will be an (A)ccept or (R)eject, so convert to truth value.
+            return newLabel == "A"
+        }
+        // Get sum total for a partRating.
+        function sumTotalPartRating(partRating) {
+            // Iterate through all ratings in part rating.
+            let total = 0
+            for (const [_, value] of Object.entries(partRating)) {
+                total += parseInt(value)
+            }
+            return total
         }
     </script>
 </head>
@@ -74,16 +148,24 @@
         inputFile.addEventListener('change', (event) => {
             selectedFile = event.target.files[0]
             if (selectedFile) {             
-                // Parse input file.   
-                write("Parsing input file...")
-                processInput(selectedFile, function(results) {
-                    workflows = results[0]
+                // Parse input file.                   
+                parseInputFile(selectedFile, function(results) {
+                    workflowsMap = results[0]
+                    write(`Parsed workflows: ${workflowsMap.size}.`)
                     partRatings = results[1]
-                    // Display inout data.
-                    write("Workflows:")
-                    workflows.forEach(workflow => displayObject(workflow))
-                    write("PartRatings:");
-                    partRatings.forEach(partRating => displayObject(partRating))                    
+                    write(`Parsed part ratings: ${partRatings.length}.`)
+                    // Get total of ratings.
+                    write("Processing all workflows...")
+                    let totalPartRatings = 0
+                    for (let partRating of partRatings) {
+                        let isValid = isPartRatingAccepted(partRating, workflowsMap)
+                        displayObject(partRating)
+                        write(isValid)
+                        let total = (isValid == true ? sumTotalPartRating(partRating) : 0)
+                        write(total)
+                        totalPartRatings += total
+                    }                        
+                    write(`Part 1 answer: ${totalPartRatings}`)
                 })
             }
         })    

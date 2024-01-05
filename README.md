@@ -28,5 +28,6 @@ Current schedule (with stars completed):
 * Day 16: Kotlin (⭐️⭐️)
 * Day 17: C/C++ (⭐️⭐️)
 * Day 18: OCaml (⭐️⭐️)
-* Day 19: JavaScript
-* Day 20: TBC
+* Day 19: JavaScript (⭐️)
+* Day 20: Tcl/tk
+* TBC

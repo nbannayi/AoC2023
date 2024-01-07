@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Advent of Code 2023: Day 19 - Aplenty - Part 2</title>
+    <script> 
+        // General purpose functions.
+        // Write text to web page.
+        function write(text) {
+            let paragraph = document.createElement("p")
+            paragraph.textContent = text
+            document.body.appendChild(paragraph)
+        }
+        // Stringify a JSON object.
+        function stringify(object) {
+            return JSON.stringify(object, null, 2)
+        }
+        // Copy a JSON object.
+        function copy(object) {
+            return JSON.parse(stringify(object))
+        }
+        // Parsing functions.
+        // Parse a workflow into an object.
+        function parseWorkflow(inputString) {            
+            const matches = inputString.match(/(\w+){(.*?)}/)
+            if (matches && matches[1] && matches[2]) {
+                const label = matches[1];
+                const rulesArray = matches[2]
+                    .split(',')
+                    .map((ruleString, index, array) => {
+                        const [key, value] = ruleString.split(':');
+                        if (index === array.length - 1) {
+                            return { "last": key }
+                        } else {
+                            return { [key]: value || null }
+                        }
+                    })
+                return { [label]: rulesArray }
+            }
+            return null
+        }   
+        // Parse input file.
+        function parseInputFile(file, callback) {
+            write("Parsing input file.")            
+            // Create a new FileReader
+            var reader = new FileReader()
+            // Define the callback for when the file is loaded
+            reader.onload = function (event) {
+                // Access the contents of the file
+                var fileContent = event.target.result
+                // Process the file content as needed
+                const sections = fileContent.split('\n\n')
+                // Get workflows as an array of json objects.
+                const workflows = sections[0].split('\n').map(workflow => parseWorkflow(workflow))
+                // Put array of json objects into a map for efficiency.
+                let workflowsMap = new Map()
+                workflows.forEach(workflow => {
+                    let key = Object.entries(workflow)[0][0]                    
+                    workflowsMap.set(key, workflow[key])
+                })
+                callback(workflowsMap)
+            }
+            // Read the file as text
+            reader.readAsText(file)
+        }
+        // Processing functions.
+        // Process all workflows.
+        function processWorkflows(startLabel, workflowsMap) {                                    
+            // Get next interval based on condition.
+            function processInterval(partIntervals, condition) {
+                if (condition == "last") {
+                    return [copy(partIntervals),copy(partIntervals)]
+                } else {
+                    let condLabel = condition.substring(0,1)                    
+                    let condOperator = condition.substring(1,2)
+                    let condValue = condition.substring(2)
+                    var replaceInterval1 = copy(partIntervals[condLabel])                    
+                    var replaceInterval2 = copy(partIntervals[condLabel])                    
+                    if (condOperator == "<") {
+                        replaceInterval1[1] = (parseInt(condValue)-1).toString()
+                        replaceInterval2[0] = condValue
+                    } else {
+                        replaceInterval1[0] = (parseInt(condValue)+1).toString()
+                        replaceInterval2[1] = condValue
+                    }
+                    newPartIntervals1 = copy(partIntervals)
+                    newPartIntervals2 = copy(partIntervals)
+                    newPartIntervals1[condLabel] = replaceInterval1
+                    newPartIntervals2[condLabel] = replaceInterval2
+                    return [newPartIntervals1,newPartIntervals2]
+                }
+            }
+            // Create initial stacks.
+            let workingStack = []
+            let acceptedStack = []        
+            // Get initial workflow and initialise working stack.
+            let startIntervals = {"x": ["1","4000"], "m": ["1", "4000"], "a": ["1", "4000"], "s": ["1", "4000"]} 
+            workingStack.push({"label": startLabel, "index": "0", "intervals": startIntervals})
+            // Now process stacks.
+            while (workingStack.length > 0) {                
+                // Get top element.
+                let elem = workingStack.pop()
+                // Handle found accept or reject.
+                if (elem.label == "A" || elem.label == "R") {
+                    while (elem.label == "A" || elem.label == "R") {                                        
+                        if (elem.label == "A") acceptedStack.push(elem)
+                        elem = workingStack.pop()
+                        elem.index++
+                        while (elem.index == workflowsMap.get(elem.label).length) {
+                            if (workingStack.length == 0) break
+                            elem = workingStack.pop()
+                            elem.index++
+                        }
+                    }
+                    let kvp = workflowsMap.get(elem.label)[elem.index-1]
+                    let [condition, newLabel] = Object.entries(kvp)[0];
+                    let [interval1, interval2] = processInterval(elem.intervals, condition)
+                    elem.intervals = interval2
+                }
+                if (elem.index == workflowsMap.get(elem.label).length) continue                    
+                let kvp = workflowsMap.get(elem.label)[elem.index]
+                let [condition, newLabel] = Object.entries(kvp)[0];
+                let [interval1, interval2] = processInterval(elem.intervals, condition)                
+                workingStack.push(elem)
+                let newElem = {"label": newLabel, "index": "0", "intervals": interval1}
+                workingStack.push(newElem)
+            }
+            return acceptedStack
+        }
+        // Work out distinct combos.
+        function calcAcceptedCombos(acceptedCombinations) {
+            let totalAcceptedCombos = 0            
+            for (let combo of acceptedCombinations) {
+                let xc = combo.intervals.x[1]-combo.intervals.x[0]+1
+                let mc = combo.intervals.m[1]-combo.intervals.m[0]+1
+                let ac = combo.intervals.a[1]-combo.intervals.a[0]+1
+                let sc = combo.intervals.s[1]-combo.intervals.s[0]+1
+                totalAcceptedCombos += xc*mc*ac*sc   
+                write(`${stringify(combo.intervals)}, running total: ${totalAcceptedCombos}`)             
+            }                   
+            return totalAcceptedCombos
+        }
+    </script>
+</head>
+<body>
+    <H1>Advent of Code 2023 - Day 19 - Aplenty - Part 2</H1><hr>
+    <H2>Language: JavaScript</H2><hr>
+    <H4>Please browse to the puzzle input: <input type="file" id="inputFile"/></H4>
+    <script language = "javascript" type = "text/javascript">
+        // Provide the ability for the user to select an input file.
+        const inputFile = document.getElementById('inputFile')
+        inputFile.addEventListener('change', (event) => {
+            selectedFile = event.target.files[0]
+            if (selectedFile) {             
+                // Parse input file.                   
+                parseInputFile(selectedFile, function(workflowsMap) {                    
+                    write(`Parsed workflows: ${workflowsMap.size}`)
+                    write("Processing workflows...")
+                    let combos = processWorkflows("in", workflowsMap)                    
+                    write(`Part 2 answer: ${calcAcceptedCombos(combos)}`)
+                })
+            }
+        })    
+    </script>
+</body>
+</html>

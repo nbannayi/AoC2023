@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Open Aplenty.html",
-            "file": "/Users/Nick/development/workspace/AoC2023/Day19/Aplenty.html"
+            "file": "/Users/Nick/development/workspace/AoC2023/Day19/AplentyPart2.html"
         }
     ]
 }

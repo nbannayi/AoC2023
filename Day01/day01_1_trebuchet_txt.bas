@@ -25,6 +25,6 @@
 180 return
 190 rem
 200 rem puzzle input
-1000 data "gtlbhbjgkrb5sixfivefivetwosix"
-1010 rem data redacted but put other data statements here
-10990 data "eightrtsjszc2"
+1000 rem data redacted but put other data statements here
+1010 rem data here
+10990 rem data here

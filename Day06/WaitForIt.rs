@@ -46,10 +46,11 @@ fn main () {
     // Input data - so small created it manually.    
     let races =
         [
-            Race {time: 46, distance: 358}, 
-            Race {time: 68, distance: 1054}, 
-            Race {time: 98, distance: 1807},
-            Race {time: 66, distance: 1080}
+            // Redacted - enter manually.
+            Race {time: 1, distance: 5}, 
+            Race {time: 2, distance: 6}, 
+            Race {time: 3, distance: 7},
+            Race {time: 4, distance: 8}
         ];
 
     // Part 1.

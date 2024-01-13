@@ -30,4 +30,7 @@ Current schedule (with stars completed):
 * Day 18: OCaml (⭐️⭐️)
 * Day 19: JavaScript (⭐️⭐️)
 * Day 20: Tcl/Tk (⭐️)
-* Day 21: TBC
+* Day 21: Scala
+
+**Week 4**
+* Day 22: TBC

@@ -28,15 +28,9 @@ proc send {pulse sourceModule destModule modules memory} {
         set pulseStr "low"
     } else {
         set pulseStr "high"
-    }        
-    # Get rx module for part 2.
-    set rxLowPulse 0
-    set rxHighPulse 0
-    if {$destModule == "rx" && $pulse == 0} {
-        set rxLowPulse 1 
-    } elseif {$destModule == "rx" && $pulse == 1} {
-        set rxHighPulse 1 
-    }
+    } 
+    # Print route.
+    set route "$sourceModule -$pulseStr-> $destModule"
     # Flip-flop.
     if {[dict exists $modules "%$destModule"]} {        
         # Init newPulse.
@@ -47,12 +41,10 @@ proc send {pulse sourceModule destModule modules memory} {
             set currentStatus [dict get $memory $destModule]    
         }
         # If a high pulse is received, set memory but do nothing.
-        if {$pulse == 1} {
-            #puts "Processing hi pulse, no action"
-            return [list -1 {} $memory $rxLowPulse $rxHighPulse]
+        if {$pulse == 1} {            
+            return [list -1 {} $memory $route]
         # If a low pulse is received flip-flop.
-        } else {
-            #puts "Processing low pulse"
+        } else {            
             if {$currentStatus == "on"} {
                 set currentStatus "off"
                 dict set memory $destModule $currentStatus
@@ -63,7 +55,7 @@ proc send {pulse sourceModule destModule modules memory} {
                 set newPulse 1
             }
             set newDestModules [dict get $modules "%$destModule"]
-            return [list $newPulse $newDestModules $memory $rxLowPulse $rxHighPulse]
+            return [list $newPulse $newDestModules $memory $route]
         }        
     # Conjunction.
     } elseif {[dict exists $modules "&$destModule"]} {        
@@ -84,9 +76,9 @@ proc send {pulse sourceModule destModule modules memory} {
             }
         }        
         set newDestModules [dict get $modules "&$destModule"]        
-        return [list $newPulse $newDestModules $memory $rxLowPulse $rxHighPulse]
+        return [list $newPulse $newDestModules $memory $route]
     }
-    return [list $pulse {} $memory $rxLowPulse $rxHighPulse]
+    return [list $pulse {} $memory $route]
 }
 
 # Now process a button push, this will run until the pulses queue is empty.
@@ -94,8 +86,7 @@ proc pushButton {modules memory} {
     # Init high and low pulses.
     set noLowPulses 1
     set noHighPulses 0
-    set noRxLowPulses 0
-    set noRxHighPulses 0
+    set routes {}
     # Create an init pulses queue.
     set pulses [createQueue]
     set broadcasterModule [dict get $modules broadcaster]
@@ -118,17 +109,15 @@ proc pushButton {modules memory} {
         set newPulse [lindex $result 0]
         set newDestModules [lindex $result 1]
         set newMemory [lindex $result 2]
-        set rxlp [lindex $result 3]
-        set rxhp [lindex $result 4]
-        set noRxLowPulses [expr {$noRxLowPulses + $rxlp}]
-        set noRxHighPulses [expr {$noRxHighPulses + $rxhp}]
+        set route [lindex $result 3]
+        lappend routes $route
         # Add new pulses to queue and update memory.
         foreach module $newDestModules {
             enqueue pulses [list $destModule $module $newPulse]
         }
         set memory $newMemory
     }
-    return [list $memory $noLowPulses $noHighPulses $noRxLowPulses $noRxHighPulses]
+    return [list $memory $noLowPulses $noHighPulses $routes]
 }
 
 # Now process a button push n times, this will run until the pulses queue is empty.
@@ -147,23 +136,17 @@ proc pushButtonNTimes {modules memory n} {
     return [list $memory $totalNoLowPulses $totalNoHighPulses]
 }
 
-# Try to find no pushes required to send a single low pulse to rx to switch on machine.
-proc findNoPushesToSwitchOn {modules memory} {
-    set i 0
-    while {true} {
-        set i [incr i]
+# Push the button till we achieve the desired condition.  Return no. pushes.
+proc pushButtonTillCondition {modules memory requiredRoute} {
+    set obtainedRoutes {}
+    set noPushes 0
+    while {[lsearch $obtainedRoutes $requiredRoute] == -1} {
+        set noPushes [incr noPushes]        
         set result [pushButton $modules $memory]
-        set newMemory [lindex $result 0]
-        set noLowPulses [lindex $result 1]
-        set noHighPulses [lindex $result 2]    
-        set noRxLowPulses [lindex $result 3]
-        set noRxHighPulses [lindex $result 4]
-        if {$noRxLowPulses >= 1} {
-            return $i
-        }
-        puts "$i: $noLowPulses, $noHighPulses, $noRxLowPulses, $noRxHighPulses" 
-        set memory $newMemory
+        set memory [lindex $result 0]        
+        set obtainedRoutes [lindex $result 3]
     }
+    return $noPushes
 }
 
 # Initialise memory.
@@ -190,16 +173,77 @@ proc initMemory {modules} {
     return $memory
 }
 
+# Calculate the Lowest Common Multiple (LCM).
+proc lcm {a b} {
+    proc gcd {a b} {
+        while {$b} {
+            set temp $a
+            set a $b
+            set b [expr {$temp % $b}]
+        }
+        return $a
+    }
+    if {$a == 0 || $b == 0} {
+        return 0
+    }
+    return [expr {abs($a * $b) / [gcd $a $b]}]
+}
+
 # Modules which will contain the layout.
 set modules [parseInputFile "Day20Input.txt"]
 
-# Part 1.
-set memory [initMemory $modules]
-set result [pushButtonNTimes $modules $memory 1000]
-set pulseProduct [expr {[lindex $result 1] * [lindex $result 2]}]
-puts "Part 1 answer: $pulseProduct"
+# Display it all in Tk.
 
-# Part 2.
-#set memory [initMemory $modules]
-#set noPushes [findNoPushesToSwitchOn $modules $memory]
-#puts "Part 2 answer: $noPushes"
+# Function to be called when the button is clicked
+proc updateValues {modules} {
+    # Part 1.
+    set memory [initMemory $modules]
+    set result [pushButtonNTimes $modules $memory 1000]
+    set pulseProduct [expr {[lindex $result 1] * [lindex $result 2]}]
+    .label1 configure -text "Part 1 answer: $pulseProduct"
+
+    # Part 2.
+    # Looking at the input need to find LCM of number of pushes such that:
+    # jn -low-> hn, jl -low-> mp, qp -low-> xf, fb -low-> fz
+    # -------------------------------------------------
+    # Init memory and work out first conjunction point.
+    set memory [initMemory $modules]
+    set jnPushes [pushButtonTillCondition $modules $memory {jn -low-> hn}]
+    # Init memory and work out second conjunction point.
+    set memory [initMemory $modules]
+    set jlPushes [pushButtonTillCondition $modules $memory {jl -low-> mp}]
+    # Init memory and work out third conjunction point.
+    set memory [initMemory $modules]
+    set gpPushes [pushButtonTillCondition $modules $memory {gp -low-> xf}]
+    # Init memory and work out fourth conjunction point.
+    set memory [initMemory $modules]
+    set fbPushes [pushButtonTillCondition $modules $memory {fb -low-> fz}]
+    # Now LCM of all of these will mean low inputs fo all of these which will in turn
+    # go through the remaining few steps to send a low pulse to rx.
+    set lcm1 [lcm $jnPushes $jlPushes]
+    set lcm2 [lcm $gpPushes $fbPushes]
+    set totalPushes [lcm $lcm1 $lcm2]
+    .label2 configure -text "Part 2 answer: $totalPushes"
+}
+
+# Create the main window
+wm title . "Advent of Code 2023 - Day 20"
+wm geometry . 400x200
+
+# Create and place a label for "Pulse Propagation"
+label .pulseLabel -text "Pulse Propagation"
+pack .pulseLabel -side top -pady 5
+
+# Create and place labels
+label .label1 -text "Part 1 answer:"
+label .label2 -text "Part 2 answer:"
+
+pack .label1 -side top -pady 5
+pack .label2 -side top -pady 5
+
+# Create a button to trigger the updateValues function
+button .button -text "Calculate answers" -command {updateValues $modules}
+pack .button -side top -pady 10
+
+# Run the Tkinter event loop
+update

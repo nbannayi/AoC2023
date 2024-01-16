@@ -33,4 +33,5 @@ Current schedule (with stars completed):
 * Day 21: F# (⭐️)
 
 **Week 4**
-* Day 22: TBC
+* Day 22: Java
+* Day 23: TBC

@@ -52,13 +52,43 @@ module Garden =
            | Some c -> c
            | None -> failwith "No start coord found."
 
+    /// Create an expanded garden for part 2.
+    let createBig n inputFile =
+        let garden =         
+            inputFile
+            |> create
+        let start =
+            garden
+            |> getStartCoord
+        let wideLines =
+            inputFile
+            |> File.ReadLines
+            |> Array.ofSeq
+            |> Array.map (fun l -> l.Replace("S","."))
+            |> Array.map (fun l -> l |> String.replicate(n))
+        let bigGarden =
+            [|for _ in [1..n] -> wideLines|]
+            |> Array.collect (fun w -> w)
+        let plots = Array2D.create (bigGarden.Length) (bigGarden.[0].Length) ' '
+        for row in [0..bigGarden.Length-1] do
+            for col in [0..bigGarden.[0].Length-1] do
+                plots.[row,col] <- bigGarden.[row].[col]
+        let garden' = 
+            {
+                Plots = plots                
+            }
+        let row,col = start
+        let offset = (n-1)/2
+        garden' |> setPlot (row+(offset*((garden |> getNoRows))), col+(offset*((garden |> getNoCols)))) 'S'
+        garden'
+
     /// Get all visitable neighbours from a given coordinate.
     let getNeighbours coords garden =
         let row,col = coords
         let maxRows,maxCols = (garden |> getNoRows), (garden |> getNoCols)
         [row-1,col; row+1,col; row,col-1; row,col+1]
         |> List.filter (fun (r,c) -> r >= 0 && c >= 0 && r < maxRows && c < maxCols)
-        |> List.filter (fun c -> ['O';'#';','] |> List.contains (garden |> getPlot c) |> not)
+        |> List.filter (fun c -> ['O';'#'] |> List.contains (garden |> getPlot c) |> not)
 
     /// Recursively walk around a bit.
     let rec walk maxSteps coords garden =
@@ -71,7 +101,10 @@ module Garden =
                 if (garden |> getPlot coord) = 'O' then
                     garden |> walk maxSteps tail
                 else                    
-                    if index % 2 = 0 then garden |> setPlot coord 'O'
+                    if maxSteps % 2 = 0 then
+                        if index % 2 = 0 then garden |> setPlot coord 'O'
+                    else
+                        if index % 2 = 1 then garden |> setPlot coord 'O'
                     let neighbours = garden |> getNeighbours coord
                     if index < maxSteps then
                         let newNeighbours = tail @ List.zip neighbours (List.init (neighbours.Length) (fun _ -> index+1))

@@ -34,6 +34,6 @@ Current schedule (with stars completed):
 
 **Week 4**
 * Day 22: Python (⭐️⭐️)
-* Day 23: TBC
+* Day 23: Java
 * Day 24: TBC
 * Day 25: TBC

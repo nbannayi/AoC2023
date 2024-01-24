@@ -110,17 +110,22 @@ def display_grid(grid):
 
 def can_disintegrate_slab(slab, landed_slabs, grid):
     '''Check is slab can be disintegrated'''
-    # First disintegrate slab in a copy of the grid.    
-    grid_copy = copy.deepcopy(grid) 
-    for block in get_slab_blocks(slab):
+    # First disintegrate slab in a copy of the grid.        
+    blocks = get_slab_blocks(slab)
+    for block in blocks:
         x,y,z = block
-        grid_copy[x][y][z] = 0
+        grid[x][y][z] = 0
     # Now check if anything moves (might need optimising.)
     potential_slabs_above = [sublist for sublist in landed_slabs if slab[1][2]+1 == sublist[0][2]]
+    droppable = True
     for slab in potential_slabs_above:
-        if can_drop(slab, grid_copy):
-            return False
-    return True
+        if can_drop(slab, grid):
+            droppable = False
+            break
+    for block in blocks:
+        x,y,z = block
+        grid[x][y][z] = 1
+    return droppable
 
 def get_no_disintegratable_slabs(slabs, grid):
     '''Given parsed slabs and grid, return total of how many can be disintegrated.'''

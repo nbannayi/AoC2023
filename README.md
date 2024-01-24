@@ -33,7 +33,7 @@ Current schedule (with stars completed):
 * Day 21: F# (⭐️⭐️)
 
 **Week 4**
-* Day 22: Python (⭐️)
+* Day 22: Python (⭐️⭐️)
 * Day 23: TBC
 * Day 24: TBC
 * Day 25: TBC

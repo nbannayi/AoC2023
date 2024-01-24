@@ -129,15 +129,50 @@ def can_disintegrate_slab(slab, landed_slabs, grid):
 
 def get_no_disintegratable_slabs(slabs, grid):
     '''Given parsed slabs and grid, return total of how many can be disintegrated.'''
-    landed_slabs, grid = drop_slabs(slabs, grid)
     total = 0
     for slab in landed_slabs:
         if can_disintegrate_slab(slab, landed_slabs, grid):
             total += 1
     return total
 
+def apply_gravity(slabs, grid):
+    '''Apply gravity to stabilise grid'''
+    total_moved = 0
+    for slab in slabs:
+        droppable = False
+        while can_drop(slab, grid):
+            blocks = get_slab_blocks(slab)
+            no_blocks = len(blocks)
+            for block in blocks:
+                x,y,z = block
+                grid[x][y][z] = 0
+                grid[x][y][z-1] = 1            
+            slab = [[blocks[0][0],blocks[0][1],blocks[0][2]-1], 
+                [blocks[no_blocks-1][0],blocks[no_blocks-1][1],blocks[no_blocks-1][2]-1]]
+            if (not droppable):
+                droppable = True
+        if droppable:
+            total_moved += 1
+    return total_moved
+
 # Part 1.
 input_file = "Day22Input.txt"
 slabs = parse_slabs(input_file)
 grid = init_grid(slabs)
-print("Part 1 answer:", get_no_disintegratable_slabs(slabs, grid))
+landed_slabs, grid = drop_slabs(slabs, grid)
+print("Part 1 answer:", get_no_disintegratable_slabs(landed_slabs, grid))
+
+# Part 2.
+# Brute force and unoptimised - but part 2 pretty much broke me so I don't care - takes a minute or so...
+orig_landed_slabs = copy.deepcopy(landed_slabs)
+orig_grid = copy.deepcopy(grid)
+total_moved = 0
+for slab in orig_landed_slabs:
+    landed_slabs.remove(slab)
+    for block in get_slab_blocks(slab):
+        x,y,z = block
+        grid[x][y][z] = 0   
+    total_moved += apply_gravity(landed_slabs, grid)
+    landed_slabs = copy.deepcopy(orig_landed_slabs)
+    grid = copy.deepcopy(orig_grid)
+print('Part 2 answer:',total_moved)

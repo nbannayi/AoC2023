@@ -11,7 +11,7 @@ namespace Day24
     class Program
     {
         // Parse input file and return all hailstones.
-        static List<Hailstone> ParseInput(string inputFile)
+        private static List<Hailstone> ParseInput(string inputFile)
         {            
             string[] lines = File.ReadAllLines(inputFile);
             var hailstones = new List<Hailstone>();
@@ -25,7 +25,7 @@ namespace Day24
         }
 
         // Create a list containing all unique pairs of hailstones.
-        static List<(Hailstone,Hailstone)> GetHailstonePairs(List<Hailstone> hailstones)
+        private static List<(Hailstone,Hailstone)> GetHailstonePairs(List<Hailstone> hailstones)
         {
             List<(Hailstone, Hailstone)> pairs = new List<(Hailstone, Hailstone)>();
             for (int i = 0; i < hailstones.Count - 1; i++)
@@ -34,7 +34,30 @@ namespace Day24
             return pairs;            
         }
 
-        static void Main(string[] args)
+        // Solve either for px,py,vx,vy or py,pz,vy,vz - pass is xy = true for first,
+        // xy = false for second.
+        private static (long,long,long,long) SolveAxes(List<(Hailstone,Hailstone)> hailstonePairs, bool xy)
+        {
+            // Solve x,y.
+            var matrix = new double[4, 4];
+            var vector = new double[4];
+            for (var i = 0; i < 4; i++)
+            {
+                var (hailstone1, hailstone2) = hailstonePairs[i];
+                var coefficients = hailstone1.GetLinearConstraint(hailstone2, xy);
+                for (var j = 0; j < 4; j++) matrix[i, j] = coefficients[j];
+                vector[i] = coefficients[4];
+            }
+            var solver = new LinearSolver(matrix, vector);
+            solver.Solve();
+            var p1 = (long)Math.Round(solver.ValuesVector[0], 0);
+            var p2 = (long)Math.Round(solver.ValuesVector[1], 0);
+            var v1 = (long)Math.Round(solver.ValuesVector[2], 0);
+            var v2 = (long)Math.Round(solver.ValuesVector[3], 0);
+            return (p1, p2, v1, v2);
+        }
+
+        public static void Main(string[] args)
         {
             // Parse input.
             var inputFile = "Day24Input.txt";
@@ -51,6 +74,15 @@ namespace Day24
                 if (intersects) noIntersections++;
             }
             Console.WriteLine("Part 1 answer: " + noIntersections);
+
+            // Part 2.
+
+            // Solve x,y.
+            var (rockPx, rockPy, _, _) = SolveAxes(hailstonePairs, true);
+            // Solve y,z.
+            var (_, rockPz, _, _) = SolveAxes(hailstonePairs, false);
+
+            Console.WriteLine($"Part 2 answer: {rockPx+rockPy+rockPz}");
         }
     }
 }

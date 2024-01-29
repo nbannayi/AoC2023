@@ -51,6 +51,37 @@ namespace Day24
             return false;
         }
 
+        // Slightly hard to explain but basically takes the current hailstone and another
+        // and creates a linear constraint that can be solved as a system of equations.
+        // Pass in xy as true for x,y equations, otherise y,z is used.  Then 4 of these can be solved
+        // for 4 unknowns in the Solver using GE.  Had to trawl Reddit for inspiration on this one:
+        // https://www.reddit.com/r/adventofcode/comments/18q40he/2023_day_24_part_2_a_straightforward_nonsolver/
+        public double[] GetLinearConstraint(Hailstone other, bool xy)
+        {
+            if (xy)
+            {
+                // Coefficients a,b,c,d,e of a*px + b*py + c*vx + d*vy = e                
+                return new double[] {
+                    other._vy - _vy,
+                    _vx - other._vx,
+                    _py - other._py,
+                    other._px - _px,
+                    other._px * other._vy - other._py * other._vx - _px * _vy + _py * _vx
+                };
+            }
+            else
+            {
+                // Coefficients a,b,c,d,e of a*py + b*pz + c*vy + d*vz = e                
+                return new double[] {
+                    other._vz - _vz,
+                    _vy - other._vy,
+                    _pz - other._pz,
+                    other._py - _py,
+                    other._py * other._vz - other._pz * other._vy - _py * _vz + _pz * _vy
+                };
+            }                        
+        }
+
         // Output string representation.
         public override string ToString()
         {

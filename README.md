@@ -35,5 +35,5 @@ Current schedule (with stars completed):
 **Week 4**
 * Day 22: Python (⭐️⭐️)
 * Day 23: Java (⭐️⭐️)
-* Day 24: C#
-* Day 25: TBC
+* Day 24: C# (⭐️⭐️)
+* Day 25: LOLCODE

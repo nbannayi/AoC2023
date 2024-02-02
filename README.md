@@ -36,4 +36,4 @@ Current schedule (with stars completed):
 * Day 22: Python (⭐️⭐️)
 * Day 23: Java (⭐️⭐️)
 * Day 24: C# (⭐️⭐️)
-* Day 25: LOLCODE
+* Day 25: R (⭐️⭐️)

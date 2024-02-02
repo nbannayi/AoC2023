@@ -3,7 +3,7 @@
 This year I am hoping to use a different language every day in an attempt challenge myself and expand my horizons.  I'm not sure how far I will get!
 Please note many of the solutions are unlikely to be particularly good as I'll be attempting to pick up many of the languages from scratch.
 
-A (fairly tongue-in-cheek) blog can be found is here for how it played out: 
+A (fairly tongue-in-cheek) blog can be found here on how it played out: 
 https://medium.com/@nbannayi/my-advent-of-code-b-lunder-log-b42ffc1616bd
 
 Current schedule (with stars completed):

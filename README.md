@@ -6,7 +6,7 @@ Please note many of the solutions are unlikely to be particularly good as I'll b
 A (fairly tongue-in-cheek) blog can be found here on how it played out: 
 https://medium.com/@nbannayi/my-advent-of-code-b-lunder-log-b42ffc1616bd
 
-Current schedule (with stars completed):
+Final schedule (with stars completed):
 
 **Week 1**
 * Day 01: BASIC (⭐️⭐️)
